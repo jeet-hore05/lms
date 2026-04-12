@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const userSchema = new Schema({
     fullName : {
@@ -18,7 +19,7 @@ const userSchema = new Schema({
         trim : true,
         unique : true,
         match : [
-
+            /^\S+@\S+\.\S+$/, "Please use a valid email"
         ]    
     },
     password : {
@@ -47,12 +48,13 @@ const userSchema = new Schema({
     timestamps : true
 });
 
-userSchema.pre("save",async function(next) {
+userSchema.pre("save",async function() {
     if(!this.isModified("password")){
-        return next();
+        return ;
     }
 
     this.password = await bcrypt.hash(this.password,10);
+    
 })
 
 userSchema.methods = {
@@ -68,6 +70,20 @@ userSchema.methods = {
 
     comparePassword : async function(plainTextPassword){
         return await bcrypt.compare(plainTextPassword, this.password);
+    },
+
+    generatePasswordResetToken : async function() {
+        const resetToken = crypto.randomBytes(20).toString("hex");
+
+        this.forgotPasswordToken = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex")
+        ;    
+
+        this.forgotPasswordExpiry = Date.now()+ 15*60*1000 // 15 min from now
+
+        return resetToken;
     }
 }
 

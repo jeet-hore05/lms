@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 const userSchema = new Schema({
     fullName : {
-        type : "String",
+        type : String,
         required : [true, "Name is required"],
         minLength : [5, " Name must be atleast 5 character"],
         maxLength : [30, " Name should be less than 30 characters"],
@@ -13,7 +13,7 @@ const userSchema = new Schema({
         trim : true
     },
     email : {
-        type : "String",
+        type : String,
         required : [true, "Email is required"],
         lowercase : true,
         trim : true,
@@ -23,21 +23,21 @@ const userSchema = new Schema({
         ]    
     },
     password : {
-        type : "String",
+        type : String,
         required : [true, "Password is required"],
         minLength : [5, " Password must be atleast 5 character"],
         select : false
     },
     avatar : {
         public_id : {
-            type : "String"
+            type : String
         },
         secure_url : {
-            type : "String"
+            type : String
         }
     },
     role:{
-        type : "String",
+        type : String,
         enum : ["USER","ADMIN"],
         default : "USER"
     },

@@ -15,6 +15,16 @@ const isLoggedIn = async(req,res,next)=>{
     next();
 }
 
+const authorizedRoles = (...roles) => async(req,res,next)=>{
+    const currentUserRole = req.user.role;
+    if(!roles.includes(currentUserRole)){
+        return next(new AppError("You don't have permission to access this route",403));
+    }
+
+    next();
+}
+
+
 export{
-    isLoggedIn
+    isLoggedIn, authorizedRoles
 }

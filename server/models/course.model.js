@@ -51,7 +51,22 @@ const courseSchema = new Schema({
     createdBy : {
         type:String,
         required:true
-    }
+    },
+    price: {
+    type: Number,
+    required: [true, "Price is required"],
+    min: [0, "Price cannot be negative"]
+},
+
+discount: {
+    type: Number,
+    default: 0
+},
+
+isFree: {
+    type: Boolean,
+    default: false
+}
 },{
     timestamps : true
 })

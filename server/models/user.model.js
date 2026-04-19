@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import Course from "../models/course.model.js";
 
 const userSchema = new Schema({
     fullName : {
@@ -42,6 +43,13 @@ const userSchema = new Schema({
         default : "USER"
     },
 
+    purchasedCourses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Course",
+        }
+    ],
+    
     forgotPasswordToken : String,
     forgotPasswordExpiry : Date
 },{

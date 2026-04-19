@@ -36,9 +36,9 @@ const getLecturesByCourseId = async(req,res,next)=>{
 };
 
 const createCourse =async (req,res,next) =>{
-    const {title, description, category, createdBy}=req.body;
+    const {title, description, category, createdBy, price}=req.body;
 
-    if(!title || !description || !category || !createdBy){
+    if(!title || !description || !category || !createdBy || price === undefined){
         return next(new AppError("All fields are required",400));
     }
 
@@ -47,6 +47,7 @@ const createCourse =async (req,res,next) =>{
         description,
         category,
         createdBy,
+        price,
         thumbnail:{
             public_id : "Dummy",
             secure_url:"Dummy"
@@ -85,13 +86,22 @@ const createCourse =async (req,res,next) =>{
 const updateCourse=async(req,res,next)=>{
     try{
         const {id} = req.params;
+
+        const allowedUpdates = ["title", "description", "category", "price"];
+        const updateData = {};
+
+        allowedUpdates.forEach(field => {
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
+        });
+
         const course = await Course.findByIdAndUpdate(
             id,
+            updateData,
             {
-                $set : req.body
-            },
-            {
-                runValidators : true
+                new: true,          
+                runValidators: true
             }
         );
 

@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { createCourse, getAllCourses, getLecturesByCourseId, removeCourse, updateCourse, addLectureToCourseById, removeLectureFromCourse } from "../controllers/course.controller.js";
-import { authorizedRoles, isLoggedIn } from "../middlewares/auth.middleware.js";
+import { authorizedRoles, isEnrolled, isLoggedIn } from "../middlewares/auth.middleware.js";
 import upload from "../middlewares/multer.middleware.js"
 
 
 const router = Router();
 
 router.get("/", getAllCourses);
-router.get("/:id",isLoggedIn, getLecturesByCourseId);
+router.get("/:id",isLoggedIn,isEnrolled, getLecturesByCourseId);
 
 router.post("/",isLoggedIn,authorizedRoles("ADMIN"),upload.single("thumbnail"),createCourse);
 router.put("/:id",isLoggedIn,authorizedRoles("ADMIN"),updateCourse);

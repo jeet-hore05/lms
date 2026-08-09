@@ -1,26 +1,27 @@
-import {FiMenu} from 'react-icons/fi';
-import {AiFillCloseCircle} from 'react-icons/ai';
+import { FiMenu } from 'react-icons/fi';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Footer from '../Components/footer';
+import { logout } from '../Redux/Slices/AuthSlice.js';
 
-function HomeLayout( {children} ){
+function HomeLayout({ children }) {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     // for checking if user is logged in
-    const isLoggedIn = useSelector((state)=> state?.auth?.isLoggedIn);
+    const isLoggedIn = useSelector((state) => state?.auth?.isLoggedIn);
 
     // for displaying the options acc to the role
-    const role = useSelector((state)=> state?.auth?.role);
+    const role = useSelector((state) => state?.auth?.role);
 
-    function changeWidth(){
+    function changeWidth() {
         const drawerSide = document.getElementsByClassName("drawer-side");
         drawerSide[0].style.width = "auto";
     }
 
-    function hideDrawer(){
+    function hideDrawer() {
         const element = document.getElementsByClassName("drawer-toggle");
         element[0].checked = false;
 
@@ -28,15 +29,15 @@ function HomeLayout( {children} ){
 
     }
 
-    function handleLogout(e){
+    async function handleLogout(e) {
         e.preventDefault();
 
-        //const res = await dispatch(logout());
-        //if(res?.payload?.success)
-        navigate("/");
+        const res = await dispatch(logout());
+        if (res?.payload?.success)
+            navigate("/");
     }
 
-    return(
+    return (
         <div className="min-h-[90vh]">
             <div className="drawer absolute left-0 z-50 w-fit">
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -54,13 +55,13 @@ function HomeLayout( {children} ){
                     <ul className="menu w-48 p-4 h-[100%] sm:w-80 bg-base-200 text-base-content relative">
                         <li className='w-fit absolte right-2 z-50'>
                             <button onClick={hideDrawer}>
-                                <AiFillCloseCircle size={24}/>
+                                <AiFillCloseCircle size={24} />
                             </button>
                         </li>
                         <li>
                             <Link to="/">Home</Link>
                         </li>
-                        {isLoggedIn && role==='ADMIN' && (
+                        {isLoggedIn && role === 'ADMIN' && (
                             <li>
                                 <Link to="/admin/dashboard"></Link>
                             </li>
@@ -94,8 +95,11 @@ function HomeLayout( {children} ){
                                     <Link to="/user/profile">Profile</Link>
                                 </button>
 
-                                <button className='btn btn-secondary flex-1 px-4 py-1 font-semibold rounded-md'>
-                                    <Link onClick={handleLogout}>Logout</Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className='btn btn-secondary flex-1 px-4 py-1 font-semibold rounded-md'
+                                >
+                                    Logout
                                 </button>
                             </div>
                         )}
@@ -103,9 +107,9 @@ function HomeLayout( {children} ){
                 </div>
             </div>
 
-            { children }
+            {children}
 
-            <Footer/>
+            <Footer />
 
         </div>
     )

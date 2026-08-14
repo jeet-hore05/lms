@@ -8,6 +8,8 @@ import courseRoutes from "./routes/course.routes.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import paymentRoute from "./routes/payment.routes.js";
 
+import miscellaneousRoutes from "./routes/miscellaneous.routes.js";
+
 config();
 
 const app = express();
@@ -28,6 +30,8 @@ app.use("/ping", function(req,res){
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/courses", courseRoutes);
 app.use("/api/v1/payment", paymentRoute);
+
+app.use("/api/v1/", miscellaneousRoutes);
 
 app.use((req,res)=>{
     res.status(404).send("OOPS!! 404 page not found")

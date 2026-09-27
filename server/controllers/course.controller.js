@@ -35,52 +35,68 @@ const getLecturesByCourseId = async(req,res,next)=>{
     }
 };
 
-const createCourse =async (req,res,next) =>{
-    const {title, description, category, createdBy, price}=req.body;
+const createCourse = async (req, res, next) => {
+    const { title, description, category, createdBy, price } = req.body;
 
-    if(!title || !description || !category || !createdBy || price === undefined){
-        return next(new AppError("All fields are required",400));
+    if (
+        !title ||
+        !description ||
+        !category ||
+        !createdBy ||
+        price === undefined
+    ) {
+        return next(new AppError("All fields are required", 400));
     }
 
-    const course = await Course.create({
-        title,
-        description,
-        category,
-        createdBy,
-        price,
-        thumbnail:{
-            public_id : "Dummy",
-            secure_url:"Dummy"
-        }
-    })
-
-    if(!course){
-        return next(new AppError("Course could not be created, please try again",500));
-    }
-
-    try{
-        if(req.file) {
-        const result = await cloudinary.v2.uploader.upload(req.file.path,{
-            folder:"lms"
+    try {
+        const course = await Course.create({
+            title,
+            description,
+            category,
+            createdBy,
+            price,
+            thumbnail: {
+                public_id: "Dummy",
+                secure_url: "Dummy"
+            }
         });
 
-        if(result) {
-            course.thumbnail.public_id= result.public_id ;
-            course.thumbnail.secure_url= result.secure_url ;
+        if (!course) {
+            return next(
+                new AppError(
+                    "Course could not be created, please try again",
+                    500
+                )
+            );
         }
 
-        fs.rm(`uploads/${req.file.filename}`);
-      }
-    }catch(e){
-        return next(new AppError(e.message,500));
-    }
-    await course.save();
+        if (req.file) {
+            const result = await cloudinary.v2.uploader.upload(
+                req.file.path,
+                {
+                    folder: "lms"
+                }
+            );
 
-    res.status(200).json({
-        success:true,
-        message:"Course created successfully",
-        course,
-    });
+            if (result) {
+                course.thumbnail.public_id = result.public_id;
+                course.thumbnail.secure_url = result.secure_url;
+            }
+
+            await fs.rm(req.file.path);
+        }
+
+        await course.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Course created successfully",
+            course
+        });
+
+    } catch (e) {
+        return next(new AppError(e.message, 500));
+    }
 };
 
 const updateCourse=async(req,res,next)=>{
